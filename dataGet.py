@@ -40,7 +40,7 @@ def stacSearch(bbox, dt, max_items = -1, cf=-1):
     """
     LandsatSTAC = Client.open("https://landsatlook.usgs.gov/stac-server")
 
-    if max_items and cf:
+    if max_items != -1 and cf != -1:
         searchResults = LandsatSTAC.search(
             max_items = max_items,
             bbox = bbox,
@@ -66,3 +66,20 @@ def stacSearch(bbox, dt, max_items = -1, cf=-1):
             collections=['landsat-c2l2-sr'],)
 
     return searchResults
+
+def getBands(searchItem, bands):
+    """
+    Get specified bands from query results
+    @param searchItem: The search result item from LandsatSTAC search results
+    @param bands: An array of strings containing the common names of wanted bands
+    """
+    itemDict = [i.to_dict() for i in searchItem.items()]
+    #supa dupa slow nested loop
+    bandsArr = []
+    #anotha one
+    for item in itemDict:
+        hitArr = []
+        for i in range(len(bands)):
+            hitArr.append(item['assets'][bands[i]]['href'])
+        bandsArr.append(hitArr)
+    return bandsArr
